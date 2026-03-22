@@ -30,46 +30,49 @@
         .container { display: flex; flex: 1; padding: 2rem 5%; gap: 2rem; }
         main { flex: 1; }
         aside { width: 300px; }
-        .ad-placeholder { background-color: #1e293b; border: 1px dashed #475569; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: 4px; margin: 1rem auto; }
-        .ad-leaderboard { width: 728px; height: 90px; max-width: 95%; }
+
+        .ad-placeholder { background-color: #1e293b; border: 1px dashed #475569; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: 4px; margin: 1rem auto; text-align: center; }
+        .ad-leaderboard { width: 728px; height: 90px; max-width: 95%; margin: 1rem auto; }
         .ad-sidebar { width: 100%; height: 600px; position: sticky; top: 5rem; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-        .card { background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform 0.2s; display: flex; flex-direction: column; height: 100%; }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .card-thumb { width: 100%; height: 180px; background-size: cover; background-position: center; }
-        .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
-        .card-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .card-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; flex: 1; }
-        .play-btn { background-color: var(--accent); color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+        .card { background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform 0.2s; display: flex; flex-direction: column; height: 100%; cursor: pointer; }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card-thumb { width: 100%; height: 160px; background-size: cover; background-position: center; background-color: #000; }
+        .card-body { padding: 1rem; display: flex; flex-direction: column; flex: 1; }
+        .card-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .play-btn { background-color: var(--accent); color: white; border: none; padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; margin-top: auto; }
 
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.95); z-index: 1000; display: none; flex-direction: column; padding: 2rem; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.98); z-index: 1000; display: none; flex-direction: column; padding: 1rem; }
         .modal.active { display: flex; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .modal-close { background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; }
-        .modal-content { display: flex; flex: 1; gap: 1.5rem; }
-        .iframe-container { flex: 3; background: #000; border-radius: 8px; overflow: hidden; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; }
+        .modal-close { background: none; border: none; color: var(--text-main); font-size: 2.5rem; cursor: pointer; }
+        .modal-content { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .iframe-container { width: 95%; height: 90%; background: #000; border-radius: 12px; overflow: hidden; border: 2px solid var(--border); }
         .iframe-container iframe { width: 100%; height: 100%; border: none; }
 
-        #admin-panel { background-color: var(--bg-secondary); border-top: 2px solid var(--accent); padding: 2rem 5%; display: none; }
-        .admin-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
-        .btn { padding: 0.75rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .btn-primary { background-color: var(--accent); color: white; }
-        
-        @media (max-width: 900px) { .container { flex-direction: column; } aside { display: none; } }
+        #admin-panel { background-color: var(--bg-secondary); padding: 2rem 5%; display: none; border-top: 3px solid var(--accent); }
+
+        @media (max-width: 900px) { .container { flex-direction: column; } aside { display: none; } .ad-leaderboard { display: none; } }
     </style>
 </head>
 <body>
 
     <nav>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> NEXUS<span>ARCADE</span></div>
+        <div style="font-size: 0.75rem; color: var(--text-muted)">Press CTRL + L for Admin</div>
     </nav>
 
     <div class="ad-placeholder ad-leaderboard">ADVERTISEMENT</div>
 
     <div class="container">
         <main>
-            <div class="grid" id="game-grid"></div>
+            <div class="grid" id="game-grid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+                    <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color: var(--accent)"></i>
+                    <p style="margin-top: 15px;">Initializing Secure Connection...</p>
+                </div>
+            </div>
         </main>
         <aside>
             <div class="ad-placeholder ad-sidebar">ADVERTISEMENT</div>
@@ -79,22 +82,17 @@
     <div class="modal" id="game-modal">
         <div class="modal-header">
             <h2 id="modal-title">Game</h2>
-            <button class="modal-close" onclick="closeGame()"><i class="fa-solid fa-times"></i></button>
+            <button class="modal-close" onclick="closeGame()">&times;</button>
         </div>
         <div class="modal-content">
-            <div class="iframe-container"><iframe id="game-iframe" src=""></iframe></div>
+            <div class="iframe-container"><iframe id="game-iframe" src="" allowfullscreen></iframe></div>
         </div>
     </div>
 
     <section id="admin-panel">
-        <div class="admin-grid">
-            <div>
-                <h3>Add New Game</h3>
-                <input type="text" id="g-title" placeholder="Title">
-                <input type="text" id="g-url" placeholder="URL">
-                <button class="btn btn-primary" onclick="saveGameData()">Add</button>
-            </div>
-            <div id="admin-table-body"></div>
+        <div style="text-align: center;">
+            <h3>Admin Dashboard Active</h3>
+            <p>API Status: <span id="api-status">Connecting...</span></p>
         </div>
     </section>
 
@@ -102,44 +100,51 @@
         let games = [];
 
         async function loadGames() {
+            const grid = document.getElementById('game-grid');
+            const status = document.getElementById('api-status');
+
+            // NEW: Using a more robust proxy and a smaller category (Action) to prevent size errors
+            const proxy = "https://api.codetabs.com/v1/proxy?quest=";
+            const feedUrl = "https://gamemonetize.com/feed.php?format=json&category=Action&type=mobile";
+
             try {
-                // NEW HEAVY-DUTY PROXY
-                const proxy = "https://api.allorigins.win/get?url=";
-                const feedUrl = "https://gamemonetize.com/feed.php?format=json&category=All&type=mobile";
-
-                console.log("Fetching games...");
+                console.log("Starting fetch...");
                 const response = await fetch(proxy + encodeURIComponent(feedUrl));
-                const result = await response.json();
                 
-                // AllOrigins returns the data as a string in the 'contents' property
-                const data = JSON.parse(result.contents);
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                console.log("Data received, parsing...");
 
+                // Support both array and object formats
                 let gamesArray = Array.isArray(data) ? data : (data.games || Object.values(data));
 
                 games = gamesArray.slice(0, 100).map(game => ({
                     title: game.title || "Game",
                     thumb: game.thumb || game.primary_thumb,
                     url: game.url,
-                    desc: game.description || ""
                 }));
 
-                console.log("Successfully loaded " + games.length + " games.");
+                status.innerText = "Online (" + games.length + " games)";
                 renderGrid();
 
             } catch (err) {
                 console.error("Critical Error:", err);
-                document.getElementById('game-grid').innerHTML = "<h2>Failed to load games. Check the console.</h2>";
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--danger);">
+                    <i class="fa-solid fa-triangle-exclamation fa-3x"></i>
+                    <p style="margin-top:10px;">Connection Interrupted. Please refresh the page.</p>
+                </div>`;
             }
         }
 
         function renderGrid() {
             const grid = document.getElementById('game-grid');
             grid.innerHTML = games.map((game, i) => `
-                <div class="card">
+                <div class="card" onclick="openGame(${i})">
                     <div class="card-thumb" style="background-image: url('${game.thumb}')"></div>
                     <div class="card-body">
                         <h3 class="card-title">${game.title}</h3>
-                        <button class="play-btn" onclick="openGame(${i})">Play Now</button>
+                        <button class="play-btn">PLAY</button>
                     </div>
                 </div>
             `).join('');
@@ -155,6 +160,14 @@
             document.getElementById('game-modal').classList.remove('active');
             document.getElementById('game-iframe').src = "";
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                const pass = prompt("Password:");
+                if(pass === "admin123") document.getElementById('admin-panel').style.display = 'block';
+            }
+        });
 
         window.onload = loadGames;
     </script>
