@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus Arcade | HTML5 Web Games</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet" crossorigin="anonymous">
 
     <style>
         :root {
@@ -69,7 +69,6 @@
             gap: 1.5rem;
         }
 
-        /* Toggle Switch */
         .toggle-container {
             display: flex;
             align-items: center;
@@ -318,7 +317,7 @@
             background-color: var(--bg-secondary);
             border-top: 2px solid var(--accent);
             padding: 2rem 5%;
-            display: none; /* Triggered by password */
+            display: none;
             animation: slideUp 0.3s ease-out;
             position: relative;
             z-index: 50;
@@ -538,43 +537,42 @@
     </section>
 
     <script>
-        // Use standard localStorage as local cache
         let games = [];
 
-        // Fallback default dataset if games.json fetch fails or doesn't exist yet
+        // Fallback default dataset
         const defaultGames = [
             {
                 title: "Cyber Racer",
                 thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=400&q=80",
                 url: "https://itch.io/embed-upload/11842823?color=333333",
                 desc: "Race through Neo-Tokyo in this neon synthwave adventure."
-            },
-            {
-                title: "Dungeon Delver",
-                thumb: "https://images.unsplash.com/photo-1614026480209-cd9cd341186e?auto=format&fit=crop&w=400&q=80",
-                url: "https://itch.io/embed-upload/11842823?color=333333",
-                desc: "A classic 8-bit roguelike dungeon crawler crawling with skeletons."
             }
         ];
 
-        // 1. Initial Load Cycle
+        // --- BULK AUTO-UPDATER MOUNTED ---
         async function loadGames() {
             try {
-                const response = await fetch('games.json');
-                if (response.ok) {
-                    games = await response.json();
-                } else {
-                    games = defaultGames;
-                }
+                const proxy = "https://corsproxy.io/?"; 
+                const feedUrl = "https://gamemonetize.com/feed.php?format=json&category=All&type=mobile";
+
+                const response = await fetch(proxy + encodeURIComponent(feedUrl));
+                const data = await response.json();
+
+                games = data.map(game => ({
+                    title: game.title,
+                    thumb: game.thumb, 
+                    url: game.url,
+                    desc: game.description
+                }));
+
             } catch (err) {
-                console.warn("Could not fetch games.json. Falling back to default payload.");
-                games = defaultGames;
+                console.warn("Could not fetch bulk feed, loading local fallback.", err);
+                games = defaultGames; 
             }
             renderGrid();
             renderAdminTable();
         }
 
-        // 2. Render Cards to Website
         function renderGrid() {
             const grid = document.getElementById('game-grid');
             grid.innerHTML = '';
@@ -595,7 +593,6 @@
             });
         }
 
-        // 3. Render Table to GUI Manager
         function renderAdminTable() {
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
@@ -615,7 +612,6 @@
             });
         }
 
-        // --- GAME PLAY MODAL ---
         function openGame(index) {
             const game = games[index];
             document.getElementById('modal-title').innerText = game.title;
@@ -625,10 +621,9 @@
 
         function closeGame() {
             document.getElementById('game-modal').classList.remove('active');
-            document.getElementById('game-iframe').src = ""; // Flush memory
+            document.getElementById('game-iframe').src = ""; 
         }
 
-        // --- AD TOGGLE CONTROL ---
         document.getElementById('ad-toggle').addEventListener('change', function(e) {
             const sidebar = document.getElementById('sidebar-ads');
             if (e.target.checked) {
@@ -638,8 +633,6 @@
             }
         });
 
-        // --- ENCRYPTED ADMIN TRIGGER (Ctrl + L or Prompt) ---
-        // Simple hash-checker for "admin123" (Password: admin123)
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'l') {
                 e.preventDefault();
@@ -649,7 +642,6 @@
 
         function activateAdmin() {
             const pass = prompt("Enter Master Dashboard Password:");
-            // For production replace with proper hash. "admin123" for demo
             if (pass === "admin123") {
                 document.getElementById('admin-panel').style.display = 'block';
                 document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
@@ -658,7 +650,6 @@
             }
         }
 
-        // --- VISUAL GAME MANAGER (CRUD Operations) ---
         function saveGameData() {
             const title = document.getElementById('g-title').value.trim();
             const thumb = document.getElementById('g-thumb').value.trim();
@@ -673,7 +664,7 @@
             if (editIndex > -1) {
                 games[editIndex] = gameObject;
             } else {
-                games.push(gameObject);
+                games.unshift(gameObject); // Adds to the top of the feed array
             }
 
             clearForm();
@@ -691,6 +682,7 @@
 
             document.getElementById('form-title').innerText = "Edit Game: " + game.title;
             document.getElementById('save-btn').innerText = "Update Game";
+            document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
         }
 
         function deleteGame(index) {
@@ -712,7 +704,6 @@
             document.getElementById('save-btn').innerText = "Add Game";
         }
 
-        // --- SAVE AND DOWNLOAD (Bypasses GitHub Database restriction) ---
         function downloadJSON() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(games, null, 2));
             const downloadAnchor = document.createElement('a');
@@ -723,7 +714,6 @@
             downloadAnchor.remove();
         }
 
-        // Initialize App
         window.onload = loadGames;
     </script>
 </body>
