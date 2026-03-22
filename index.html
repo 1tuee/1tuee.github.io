@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus Arcade | HTML5 Web Games</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet" crossorigin="anonymous">
 
     <style>
@@ -20,706 +20,140 @@
             --success: #22c55e;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
+        nav { background-color: var(--bg-secondary); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+        .logo span { color: var(--accent); }
 
-        /* --- NAVIGATION --- */
-        nav {
-            background-color: var(--bg-secondary);
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
+        .container { display: flex; flex: 1; padding: 2rem 5%; gap: 2rem; }
+        main { flex: 1; }
+        aside { width: 300px; }
+        .ad-placeholder { background-color: #1e293b; border: 1px dashed #475569; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: 4px; margin: 1rem auto; }
+        .ad-leaderboard { width: 728px; height: 90px; max-width: 95%; }
+        .ad-sidebar { width: 100%; height: 600px; position: sticky; top: 5rem; }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+        .card { background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform 0.2s; display: flex; flex-direction: column; height: 100%; }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .card-thumb { width: 100%; height: 180px; background-size: cover; background-position: center; }
+        .card-body { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
+        .card-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .card-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; flex: 1; }
+        .play-btn { background-color: var(--accent); color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; }
 
-        .logo span {
-            color: var(--accent);
-        }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.95); z-index: 1000; display: none; flex-direction: column; padding: 2rem; }
+        .modal.active { display: flex; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .modal-close { background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; }
+        .modal-content { display: flex; flex: 1; gap: 1.5rem; }
+        .iframe-container { flex: 3; background: #000; border-radius: 8px; overflow: hidden; }
+        .iframe-container iframe { width: 100%; height: 100%; border: none; }
 
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #475569;
-            transition: .3s;
-            border-radius: 20px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--accent);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        /* --- ADS PLACEHOLDERS --- */
-        .ad-placeholder {
-            background-color: #1e293b;
-            border: 1px dashed #475569;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 4px;
-            margin: 1rem auto;
-        }
-
-        .ad-leaderboard {
-            width: 728px;
-            height: 90px;
-            max-width: 95%;
-        }
-
-        .ad-sidebar {
-            width: 100%;
-            height: 600px;
-            max-width: 300px;
-            position: sticky;
-            top: 5rem;
-        }
-
-        /* --- MAIN LAYOUT --- */
-        .container {
-            display: flex;
-            flex: 1;
-            padding: 2rem 5%;
-            gap: 2rem;
-        }
-
-        main {
-            flex: 1;
-        }
-
-        aside {
-            width: 300px;
-            transition: opacity 0.3s ease, width 0.3s ease;
-        }
-
-        aside.hidden {
-            width: 0;
-            opacity: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        /* --- GAME GRID --- */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            border-color: var(--accent);
-        }
-
-        .card-thumb {
-            width: 100%;
-            height: 180px;
-            background-color: #0f172a;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .card-desc {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
-            flex: 1;
-        }
-
-        .play-btn {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 0.75rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: background 0.2s;
-            width: 100%;
-        }
-
-        .play-btn:hover {
-            background-color: var(--accent-hover);
-        }
-
-        /* --- IFRAME MODAL --- */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(15, 23, 42, 0.95);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            padding: 2rem;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .modal-content {
-            display: flex;
-            flex: 1;
-            gap: 1.5rem;
-            height: calc(100% - 4rem);
-        }
-
-        .iframe-container {
-            flex: 3;
-            background-color: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            position: relative;
-        }
-
-        .iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .modal-ad-panel {
-            flex: 1;
-            max-width: 320px;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        /* --- ADMIN GUI --- */
-        #admin-panel {
-            background-color: var(--bg-secondary);
-            border-top: 2px solid var(--accent);
-            padding: 2rem 5%;
-            display: none;
-            animation: slideUp 0.3s ease-out;
-            position: relative;
-            z-index: 50;
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 2rem;
-        }
-
-        @media (max-width: 900px) {
-            .admin-grid { grid-template-columns: 1fr; }
-            .container { flex-direction: column; }
-            .modal-content { flex-direction: column; }
-            .modal-ad-panel { max-width: 100%; }
-        }
-
-        .admin-form {
-            background: var(--bg-primary);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            height: fit-content;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-muted);
-        }
-
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            border-radius: 6px;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 0.75rem 1rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
+        #admin-panel { background-color: var(--bg-secondary); border-top: 2px solid var(--accent); padding: 2rem 5%; display: none; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
+        .btn { padding: 0.75rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .btn-primary { background-color: var(--accent); color: white; }
-        .btn-success { background-color: var(--success); color: white; }
-        .btn-danger { background-color: var(--danger); color: white; }
-
-        .admin-table-container {
-            background: var(--bg-primary);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background-color: rgba(255,255,255,0.05);
-            color: var(--text-muted);
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 0.2rem;
-        }
-
-        .action-edit { color: var(--accent); }
-        .action-delete { color: var(--danger); }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
+        
+        @media (max-width: 900px) { .container { flex-direction: column; } aside { display: none; } }
     </style>
 </head>
 <body>
 
     <nav>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> NEXUS<span>ARCADE</span></div>
-        <div class="nav-controls">
-            <div class="toggle-container">
-                <i class="fa-solid fa-rectangle-ad"></i> Sidebar Ads
-                <label class="switch">
-                    <input type="checkbox" id="ad-toggle" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
     </nav>
 
-    <div class="ad-placeholder ad-leaderboard">
-        <i class="fa-solid fa-rectangle-ad"></i> &nbsp; Responsive Leaderboard Ad
-    </div>
+    <div class="ad-placeholder ad-leaderboard">ADVERTISEMENT</div>
 
     <div class="container">
         <main>
-            <div class="grid" id="game-grid">
-                </div>
+            <div class="grid" id="game-grid"></div>
         </main>
-
-        <aside id="sidebar-ads">
-            <div class="ad-placeholder ad-sidebar">
-                <i class="fa-solid fa-rectangle-ad"></i> &nbsp; Sidebar Skyscraper Ad
-            </div>
+        <aside>
+            <div class="ad-placeholder ad-sidebar">ADVERTISEMENT</div>
         </aside>
     </div>
 
     <div class="modal" id="game-modal">
         <div class="modal-header">
-            <h2 id="modal-title">Game Title</h2>
+            <h2 id="modal-title">Game</h2>
             <button class="modal-close" onclick="closeGame()"><i class="fa-solid fa-times"></i></button>
         </div>
         <div class="modal-content">
-            <div class="iframe-container">
-                <iframe id="game-iframe" src="" allowfullscreen></iframe>
-            </div>
-            <div class="modal-ad-panel">
-                <div class="ad-placeholder" style="height: 250px; width: 300px;">
-                    Medium Rectangle Ad
-                </div>
-                <div class="ad-placeholder" style="flex: 1; width: 300px;">
-                    Vertical Flex Ad
-                </div>
-            </div>
+            <div class="iframe-container"><iframe id="game-iframe" src=""></iframe></div>
         </div>
     </div>
 
     <section id="admin-panel">
-        <div class="admin-header">
-            <h2><i class="fa-solid fa-screwdriver-wrench"></i> JSON Game CMS</h2>
-            <button class="btn btn-success" onclick="downloadJSON()">
-                <i class="fa-solid fa-download"></i> Save & Download games.json
-            </button>
-        </div>
-
         <div class="admin-grid">
-            <div class="admin-form">
-                <h3 id="form-title" style="margin-bottom: 1rem;">Add New Game</h3>
-                <input type="hidden" id="edit-index" value="-1">
-
-                <div class="form-group">
-                    <label>Game Title</label>
-                    <input type="text" id="g-title" placeholder="e.g. Space Invaders">
-                </div>
-                <div class="form-group">
-                    <label>Thumbnail URL</label>
-                    <input type="text" id="g-thumb" placeholder="https://unsplash.com/your-image.jpg">
-                </div>
-                <div class="form-group">
-                    <label>Game Source URL (Iframe URL)</label>
-                    <input type="text" id="g-url" placeholder="https://example.com/play-game">
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="g-desc" rows="3" placeholder="Brief visual overview..."></textarea>
-                </div>
-
-                <div class="btn-row">
-                    <button class="btn btn-primary" id="save-btn" onclick="saveGameData()">Add Game</button>
-                    <button class="btn" style="background:#475569; color:white;" onclick="clearForm()">Reset</button>
-                </div>
+            <div>
+                <h3>Add New Game</h3>
+                <input type="text" id="g-title" placeholder="Title">
+                <input type="text" id="g-url" placeholder="URL">
+                <button class="btn btn-primary" onclick="saveGameData()">Add</button>
             </div>
-
-            <div class="admin-table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-table-body">
-                        </tbody>
-                </table>
-            </div>
+            <div id="admin-table-body"></div>
         </div>
     </section>
 
     <script>
         let games = [];
 
-        const defaultGames = [
-            {
-                title: "Cyber Racer",
-                thumb: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=400&q=80",
-                url: "https://itch.io/embed-upload/11842823?color=333333",
-                desc: "Race through Neo-Tokyo in this neon synthwave adventure."
-            }
-        ];
-
-        // --- UPDATED BULK AUTO-UPDATER WITH ARRAY PARSING PATCH ---
         async function loadGames() {
             try {
-                const proxy = "https://corsproxy.io/?"; 
+                // NEW HEAVY-DUTY PROXY
+                const proxy = "https://api.allorigins.win/get?url=";
                 const feedUrl = "https://gamemonetize.com/feed.php?format=json&category=All&type=mobile";
 
+                console.log("Fetching games...");
                 const response = await fetch(proxy + encodeURIComponent(feedUrl));
-                let data = await response.json();
-
-                let gamesArray = [];
+                const result = await response.json();
                 
-                // Inspecting if it is a dictionary/object or standard array
-                if (Array.isArray(data)) {
-                    gamesArray = data;
-                } else if (data && typeof data === 'object') {
-                    gamesArray = data.games || data.feed || Object.values(data);
-                }
+                // AllOrigins returns the data as a string in the 'contents' property
+                const data = JSON.parse(result.contents);
 
-                games = gamesArray.map(game => ({
-                    title: game.title || "Unknown Game",
-                    thumb: game.thumb || game.primary_thumb || "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=400&q=80", 
-                    url: game.url || "#",
-                    desc: game.description || "No description available."
+                let gamesArray = Array.isArray(data) ? data : (data.games || Object.values(data));
+
+                games = gamesArray.slice(0, 100).map(game => ({
+                    title: game.title || "Game",
+                    thumb: game.thumb || game.primary_thumb,
+                    url: game.url,
+                    desc: game.description || ""
                 }));
 
+                console.log("Successfully loaded " + games.length + " games.");
+                renderGrid();
+
             } catch (err) {
-                console.warn("Could not fetch bulk feed, loading local fallback.", err);
-                games = defaultGames; 
+                console.error("Critical Error:", err);
+                document.getElementById('game-grid').innerHTML = "<h2>Failed to load games. Check the console.</h2>";
             }
-            renderGrid();
-            renderAdminTable();
         }
 
         function renderGrid() {
             const grid = document.getElementById('game-grid');
-            grid.innerHTML = '';
-
-            games.forEach((game, index) => {
-                grid.innerHTML += `
-                    <div class="card">
-                        <div class="card-thumb" style="background-image: url('${game.thumb}')"></div>
-                        <div class="card-body">
-                            <h3 class="card-title">${game.title}</h3>
-                            <p class="card-desc">${game.desc}</p>
-                            <button class="play-btn" onclick="openGame(${index})">
-                                <i class="fa-solid fa-circle-play"></i> Play Now
-                            </button>
-                        </div>
+            grid.innerHTML = games.map((game, i) => `
+                <div class="card">
+                    <div class="card-thumb" style="background-image: url('${game.thumb}')"></div>
+                    <div class="card-body">
+                        <h3 class="card-title">${game.title}</h3>
+                        <button class="play-btn" onclick="openGame(${i})">Play Now</button>
                     </div>
-                `;
-            });
+                </div>
+            `).join('');
         }
 
-        function renderAdminTable() {
-            const tbody = document.getElementById('admin-table-body');
-            tbody.innerHTML = '';
-
-            games.forEach((game, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-weight:600">${game.title}</td>
-                        <td style="color:var(--text-muted); max-width: 250px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${game.desc}</td>
-                        <td>
-                            <button class="action-btn action-edit" onclick="editGameForm(${index})"><i class="fa-solid fa-pen-to-square"></i></button>
-                            &nbsp;&nbsp;
-                            <button class="action-btn action-delete" onclick="deleteGame(${index})"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function openGame(index) {
-            const game = games[index];
-            document.getElementById('modal-title').innerText = game.title;
-            document.getElementById('game-iframe').src = game.url;
+        function openGame(i) {
+            document.getElementById('modal-title').innerText = games[i].title;
+            document.getElementById('game-iframe').src = games[i].url;
             document.getElementById('game-modal').classList.add('active');
         }
 
         function closeGame() {
             document.getElementById('game-modal').classList.remove('active');
-            document.getElementById('game-iframe').src = ""; 
-        }
-
-        document.getElementById('ad-toggle').addEventListener('change', function(e) {
-            const sidebar = document.getElementById('sidebar-ads');
-            if (e.target.checked) {
-                sidebar.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('hidden');
-            }
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'l') {
-                e.preventDefault();
-                activateAdmin();
-            }
-        });
-
-        function activateAdmin() {
-            const pass = prompt("Enter Master Dashboard Password:");
-            if (pass === "admin123") {
-                document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert("Incorrect password.");
-            }
-        }
-
-        function saveGameData() {
-            const title = document.getElementById('g-title').value.trim();
-            const thumb = document.getElementById('g-thumb').value.trim();
-            const url = document.getElementById('g-url').value.trim();
-            const desc = document.getElementById('g-desc').value.trim();
-            const editIndex = parseInt(document.getElementById('edit-index').value);
-
-            if (!title || !url) return alert("Title and URL are required!");
-
-            const gameObject = { title, thumb, url, desc };
-
-            if (editIndex > -1) {
-                games[editIndex] = gameObject;
-            } else {
-                games.unshift(gameObject);
-            }
-
-            clearForm();
-            renderGrid();
-            renderAdminTable();
-        }
-
-        function editGameForm(index) {
-            const game = games[index];
-            document.getElementById('g-title').value = game.title;
-            document.getElementById('g-thumb').value = game.thumb;
-            document.getElementById('g-url').value = game.url;
-            document.getElementById('g-desc').value = game.desc;
-            document.getElementById('edit-index').value = index;
-
-            document.getElementById('form-title').innerText = "Edit Game: " + game.title;
-            document.getElementById('save-btn').innerText = "Update Game";
-            document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function deleteGame(index) {
-            if (confirm(`Are you sure you want to delete "${games[index].title}"?`)) {
-                games.splice(index, 1);
-                renderGrid();
-                renderAdminTable();
-            }
-        }
-
-        function clearForm() {
-            document.getElementById('g-title').value = '';
-            document.getElementById('g-thumb').value = '';
-            document.getElementById('g-url').value = '';
-            document.getElementById('g-desc').value = '';
-            document.getElementById('edit-index').value = "-1";
-
-            document.getElementById('form-title').innerText = "Add New Game";
-            document.getElementById('save-btn').innerText = "Add Game";
-        }
-
-        function downloadJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(games, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "games.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
+            document.getElementById('game-iframe').src = "";
         }
 
         window.onload = loadGames;
