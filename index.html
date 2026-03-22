@@ -3,173 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Arcade | HTML5 Web Games</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet" crossorigin="anonymous">
+    <title>Nexus Arcade | HTML5 Games</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3MvBeP8mY8GP6BMc8f/HTiU3PTBAAByaKBEmCcAEYcEBMAAAs6YQ66YAAABJRU5ErkJggg==">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --danger: #ef4444;
-            --success: #22c55e;
+            --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; --text: #f8fafc; --muted: #94a3b8; --border: #334155;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-primary); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
-
-        nav { background-color: var(--bg-secondary); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        nav { background: var(--card); padding: 1rem 5%; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.4rem; font-weight: 800; }
         .logo span { color: var(--accent); }
 
-        .container { display: flex; flex: 1; padding: 2rem 5%; gap: 2rem; }
+        .container { display: flex; padding: 2rem 5%; gap: 2rem; flex: 1; }
         main { flex: 1; }
         aside { width: 300px; }
 
-        .ad-placeholder { background-color: #1e293b; border: 1px dashed #475569; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; border-radius: 4px; margin: 1rem auto; text-align: center; }
-        .ad-leaderboard { width: 728px; height: 90px; max-width: 95%; margin: 1rem auto; }
-        .ad-sidebar { width: 100%; height: 600px; position: sticky; top: 5rem; }
+        .ad-box { background: #1e293b; border: 1px dashed #475569; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.7rem; margin-bottom: 1rem; }
+        .leaderboard { height: 90px; width: 728px; max-width: 100%; margin: 0 auto 20px; }
+        .sidebar-ad { height: 600px; width: 100%; position: sticky; top: 5rem; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
-        .card { background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform 0.2s; display: flex; flex-direction: column; height: 100%; cursor: pointer; }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .card-thumb { width: 100%; height: 160px; background-size: cover; background-position: center; background-color: #000; }
-        .card-body { padding: 1rem; display: flex; flex-direction: column; flex: 1; }
-        .card-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .play-btn { background-color: var(--accent); color: white; border: none; padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; margin-top: auto; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: 0.2s; cursor: pointer; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .card-img { width: 100%; height: 140px; background-size: cover; background-position: center; background-color: #000; }
+        .card-info { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .play-btn { background: var(--accent); color: white; border: none; padding: 0.6rem; border-radius: 6px; font-weight: 600; width: 100%; margin-top: auto; }
 
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.98); z-index: 1000; display: none; flex-direction: column; padding: 1rem; }
+        .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 1000; display: none; flex-direction: column; }
         .modal.active { display: flex; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; }
-        .modal-close { background: none; border: none; color: var(--text-main); font-size: 2.5rem; cursor: pointer; }
-        .modal-content { flex: 1; display: flex; justify-content: center; align-items: center; }
-        .iframe-container { width: 95%; height: 90%; background: #000; border-radius: 12px; overflow: hidden; border: 2px solid var(--border); }
-        .iframe-container iframe { width: 100%; height: 100%; border: none; }
+        .modal-nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; }
+        .close-modal { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; }
+        .game-wrap { flex: 1; padding: 1rem 5% 2rem; display: flex; justify-content: center; }
+        .game-frame { width: 100%; max-width: 1000px; height: 100%; background: #000; border-radius: 12px; border: 2px solid var(--border); overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        #admin-panel { background-color: var(--bg-secondary); padding: 2rem 5%; display: none; border-top: 3px solid var(--accent); }
-
-        @media (max-width: 900px) { .container { flex-direction: column; } aside { display: none; } .ad-leaderboard { display: none; } }
+        @media (max-width: 800px) { aside { display: none; } .leaderboard { display: none; } }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo"><i class="fa-solid fa-gamepad"></i> NEXUS<span>ARCADE</span></div>
-        <div style="font-size: 0.75rem; color: var(--text-muted)">Press CTRL + L for Admin</div>
-    </nav>
+<nav>
+    <div class="logo"><i class="fa-solid fa-bolt"></i> NEXUS<span>ARCADE</span></div>
+</nav>
 
-    <div class="ad-placeholder ad-leaderboard">ADVERTISEMENT</div>
+<div class="container">
+    <main>
+        <div class="ad-box leaderboard">HORIZONTAL AD SPACE</div>
+        <div class="grid" id="game-grid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+                <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color: var(--accent)"></i>
+                <p style="margin-top: 15px;">Loading Arcade...</p>
+            </div>
+        </div>
+    </main>
 
-    <div class="container">
-        <main>
-            <div class="grid" id="game-grid">
-                <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
-                    <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color: var(--accent)"></i>
-                    <p style="margin-top: 15px;">Initializing Secure Connection...</p>
+    <aside>
+        <div class="ad-box sidebar-ad">SIDEBAR AD SPACE</div>
+    </aside>
+</div>
+
+<div class="modal" id="game-modal">
+    <div class="modal-nav">
+        <h2 id="modal-title">Game Title</h2>
+        <button class="close-modal" onclick="closeGame()">&times;</button>
+    </div>
+    <div class="game-wrap">
+        <div class="game-frame">
+            <iframe id="game-iframe" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    let games = [];
+
+    async function loadArcade() {
+        const grid = document.getElementById('game-grid');
+        try {
+            // Pointing directly to your hosted games.json file
+            const response = await fetch('./games.json');
+            if (!response.ok) throw new Error("Could not find games.json locally.");
+            
+            games = await response.json();
+            renderGrid();
+            
+        } catch (err) {
+            console.error("Local load failed:", err);
+            grid.innerHTML = `<h3 style="grid-column: 1/-1; text-align: center; color: #ef4444;">Failed to load games.json. Ensure it's uploaded to GitHub!</h3>`;
+        }
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('game-grid');
+        grid.innerHTML = games.map((game, i) => `
+            <div class="card" onclick="openGame(${i})">
+                <div class="card-img" style="background-image: url('${game.thumb}')"></div>
+                <div class="card-info">
+                    <h3 class="card-title">${game.title}</h3>
+                    <button class="play-btn">PLAY NOW</button>
                 </div>
             </div>
-        </main>
-        <aside>
-            <div class="ad-placeholder ad-sidebar">ADVERTISEMENT</div>
-        </aside>
-    </div>
+        `).join('');
+    }
 
-    <div class="modal" id="game-modal">
-        <div class="modal-header">
-            <h2 id="modal-title">Game</h2>
-            <button class="modal-close" onclick="closeGame()">&times;</button>
-        </div>
-        <div class="modal-content">
-            <div class="iframe-container"><iframe id="game-iframe" src="" allowfullscreen></iframe></div>
-        </div>
-    </div>
+    function openGame(i) {
+        document.getElementById('modal-title').innerText = games[i].title;
+        document.getElementById('game-iframe').src = games[i].url;
+        document.getElementById('game-modal').classList.add('active');
+    }
 
-    <section id="admin-panel">
-        <div style="text-align: center;">
-            <h3>Admin Dashboard Active</h3>
-            <p>API Status: <span id="api-status">Connecting...</span></p>
-        </div>
-    </section>
+    function closeGame() {
+        document.getElementById('game-modal').classList.remove('active');
+        document.getElementById('game-iframe').src = "";
+    }
 
-    <script>
-        let games = [];
+    window.onload = loadArcade;
+</script>
 
-        async function loadGames() {
-            const grid = document.getElementById('game-grid');
-            const status = document.getElementById('api-status');
-
-            // NEW: Using a more robust proxy and a smaller category (Action) to prevent size errors
-            const proxy = "https://api.codetabs.com/v1/proxy?quest=";
-            const feedUrl = "https://gamemonetize.com/feed.php?format=json&category=Action&type=mobile";
-
-            try {
-                console.log("Starting fetch...");
-                const response = await fetch(proxy + encodeURIComponent(feedUrl));
-                
-                if (!response.ok) throw new Error('Network response was not ok');
-                
-                const data = await response.json();
-                console.log("Data received, parsing...");
-
-                // Support both array and object formats
-                let gamesArray = Array.isArray(data) ? data : (data.games || Object.values(data));
-
-                games = gamesArray.slice(0, 100).map(game => ({
-                    title: game.title || "Game",
-                    thumb: game.thumb || game.primary_thumb,
-                    url: game.url,
-                }));
-
-                status.innerText = "Online (" + games.length + " games)";
-                renderGrid();
-
-            } catch (err) {
-                console.error("Critical Error:", err);
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--danger);">
-                    <i class="fa-solid fa-triangle-exclamation fa-3x"></i>
-                    <p style="margin-top:10px;">Connection Interrupted. Please refresh the page.</p>
-                </div>`;
-            }
-        }
-
-        function renderGrid() {
-            const grid = document.getElementById('game-grid');
-            grid.innerHTML = games.map((game, i) => `
-                <div class="card" onclick="openGame(${i})">
-                    <div class="card-thumb" style="background-image: url('${game.thumb}')"></div>
-                    <div class="card-body">
-                        <h3 class="card-title">${game.title}</h3>
-                        <button class="play-btn">PLAY</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function openGame(i) {
-            document.getElementById('modal-title').innerText = games[i].title;
-            document.getElementById('game-iframe').src = games[i].url;
-            document.getElementById('game-modal').classList.add('active');
-        }
-
-        function closeGame() {
-            document.getElementById('game-modal').classList.remove('active');
-            document.getElementById('game-iframe').src = "";
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'l') {
-                e.preventDefault();
-                const pass = prompt("Password:");
-                if(pass === "admin123") document.getElementById('admin-panel').style.display = 'block';
-            }
-        });
-
-        window.onload = loadGames;
-    </script>
 </body>
 </html>
