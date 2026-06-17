@@ -42,10 +42,25 @@ jobs:
           ]
           EOF
 
-          # 3. Combine both feeds into games.json safely using jq
-          jq -s '.[0] + .[1] | unique_by(.title)' premium.json live_feed.json > games.json
+          # 3. Use native Python to merge them flawlessly
+          python3 -c "
+          import json
+          try:
+              with open('premium.json') as f: premium = json.load(f)
+              with open('live_feed.json') as f: live = json.load(f)
+              
+              # Combine lists while ignoring duplicate titles
+              premium_titles = {g['title'] for g in premium}
+              combined = premium + [g for g in live if g.get('title') not in premium_titles]
+              
+              with open('games.json', 'w') as f:
+                  json.dump(combined, f, indent=2)
+          except Exception as e:
+              print('Error:', e)
+              exit(1)
+          "
 
-          # 4. Clean up the temporary workspace
+          # 4. Clean up temporary files
           rm live_feed.json premium.json
 
       - name: Commit and Push Updates
@@ -53,4 +68,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add games.json
-          git diff-index --quiet HEAD || (git commit -m "Fixed game feed automation using native parsing" && git push)
+          git diff-index --quiet HEAD || (git commit -m "Fixed game feed automation using native python parsing" && git push)
