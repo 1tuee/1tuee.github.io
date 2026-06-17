@@ -16,12 +16,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Fetch and Inject Premium Games
+      - name: Fetch and Merge Game Feeds
         run: |
-          # 1. Fetch the main 100 game feed into a temporary file
+          # 1. Download the live 100 game feed
           curl -s "https://gamemonetize.com/feed.php?format=0&num=100&page=1" > live_feed.json
 
-          # 2. Build our premium classics list with corrected, working embed URLs
+          # 2. Hardcode the premium working links
           cat << 'EOF' > premium.json
           [
             {
@@ -42,22 +42,10 @@ jobs:
           ]
           EOF
 
-          # 3. Use node to combine the lists safely so premium games are always first
-          node -e "
-            const fs = require('fs');
-            try {
-              const premium = JSON.parse(fs.readFileSync('premium.json', 'utf8'));
-              const live = JSON.parse(fs.readFileSync('live_feed.json', 'utf8'));
-              // Merge them together, filtering out any duplicates
-              const combined = [...premium, ...live.filter(g => !premium.some(p => p.title === g.title))];
-              fs.writeFileSync('games.json', JSON.stringify(combined, null, 2));
-            } catch (e) {
-              console.error('Error merging feeds:', e);
-              process.exit(1);
-            }
-          "
+          # 3. Combine both feeds into games.json safely using jq
+          jq -s '.[0] + .[1] | unique_by(.title)' premium.json live_feed.json > games.json
 
-          # 4. Clean up temporary files
+          # 4. Clean up the temporary workspace
           rm live_feed.json premium.json
 
       - name: Commit and Push Updates
@@ -65,4 +53,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add games.json
-          git diff-index --quiet HEAD || (git commit -m "Fixed premium game embed links" && git push)
+          git diff-index --quiet HEAD || (git commit -m "Fixed game feed automation using native parsing" && git push)
