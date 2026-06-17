@@ -42,23 +42,8 @@ jobs:
           ]
           EOF
 
-          # 3. Use native Python to merge them flawlessly
-          python3 -c "
-          import json
-          try:
-              with open('premium.json') as f: premium = json.load(f)
-              with open('live_feed.json') as f: live = json.load(f)
-              
-              # Combine lists while ignoring duplicate titles
-              premium_titles = {g['title'] for g in premium}
-              combined = premium + [g for g in live if g.get('title') not in premium_titles]
-              
-              with open('games.json', 'w') as f:
-                  json.dump(combined, f, indent=2)
-          except Exception as e:
-              print('Error:', e)
-              exit(1)
-          "
+          # 3. Flawless single-line python execution to prevent indentation crashes
+          python3 -c "import json; p=json.load(open('premium.json')); l=json.load(open('live_feed.json')); pt={g['title'] for g in p}; c=p+[g for g in l if g.get('title') not in pt]; json.dump(c, open('games.json', 'w'), indent=2)"
 
           # 4. Clean up temporary files
           rm live_feed.json premium.json
@@ -68,4 +53,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add games.json
-          git diff-index --quiet HEAD || (git commit -m "Fixed game feed automation using native python parsing" && git push)
+          git diff-index --quiet HEAD || (git commit -m "Fixed formatting and game links" && git push)
