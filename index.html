@@ -6,7 +6,7 @@
     <title>Nexus Arcade | HTML5 Games</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3MvBeP8mY8GP6BMc8f/HTiU3PTBAAByaKBEmCcAEYcEBMAAAs6YQ66YAAABJRU5ErkJggg==">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -14,7 +14,7 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
-        
+
         nav { background: var(--card); padding: 1rem 5%; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 1.4rem; font-weight: 800; }
         .logo span { color: var(--accent); }
@@ -58,7 +58,7 @@
         <div class="grid" id="game-grid">
             <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
                 <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color: var(--accent)"></i>
-                <p style="margin-top: 15px;">Loading Arcade...</p>
+                <p style="margin-top: 15px;">Loading Live Arcade Feed...</p>
             </div>
         </div>
     </main>
@@ -86,21 +86,39 @@
     async function loadArcade() {
         const grid = document.getElementById('game-grid');
         try {
-            // Pointing directly to your hosted games.json file
-            const response = await fetch('./games.json');
-            if (!response.ok) throw new Error("Could not find games.json locally.");
+            // Using a public proxy to bypass CORS security block on the feed URL
+            const feedUrl = "https://gamemonetize.com/feed.php?format=0&num=50&page=1";
+            const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(feedUrl);
             
-            games = await response.json();
+            const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error("Could not reach feed proxy.");
+            
+            const rawData = await response.json();
+            // AllOrigins wraps the response data inside a string field called .contents
+            games = JSON.parse(rawData.contents);
+            
             renderGrid();
-            
         } catch (err) {
-            console.error("Local load failed:", err);
-            grid.innerHTML = `<h3 style="grid-column: 1/-1; text-align: center; color: #ef4444;">Failed to load games.json. Ensure it's uploaded to GitHub!</h3>`;
+            console.error("Live feed load failed:", err);
+            grid.innerHTML = `<h3 style="grid-column: 1/-1; text-align: center; color: #ef4444;">Failed to stream live feed. Falling back to local catalog...</h3>`;
+            // Fallback to local file if proxy fails
+            try {
+                const localResponse = await fetch('./games.json');
+                games = await localResponse.json();
+                renderGrid();
+            } catch(localErr) {
+                grid.innerHTML += `<p style="text-align:center; color: var(--muted);">Please verify connection or check GitHub actions.</p>`;
+            }
         }
     }
 
     function renderGrid() {
         const grid = document.getElementById('game-grid');
+        if(!games || games.length === 0) {
+            grid.innerHTML = `<h3 style="grid-column: 1/-1; text-align: center; color: var(--muted);">No games found in the feed.</h3>`;
+            return;
+        }
+        
         grid.innerHTML = games.map((game, i) => `
             <div class="card" onclick="openGame(${i})">
                 <div class="card-img" style="background-image: url('${game.thumb}')"></div>
