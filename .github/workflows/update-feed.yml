@@ -16,41 +16,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Fetch and Merge Game Feeds
+      - name: Fetch Live Game Feed Data
         run: |
-          # 1. Download the live 100 game feed
-          curl -s "https://gamemonetize.com/feed.php?format=0&num=100&page=1" > live_feed.json
-
-          # 2. Hardcode the premium working links
-          cat << 'EOF' > premium.json
-          [
-            {
-              "title": "Drift Boss",
-              "thumb": "https://img.gamemonetize.com/9v4m3v78h13pn84m92k1v5930129ksc1/512x384.jpg",
-              "url": "https://html5.gamemonetize.com/9v4m3v78h13pn84m92k1v5930129ksc1/"
-            },
-            {
-              "title": "Drive Mad",
-              "thumb": "https://img.gamemonetize.com/a2m3v78h13pn84m92k1v5930129mad2/512x384.jpg",
-              "url": "https://html5.gamemonetize.com/a2m3v78h13pn84m92k1v5930129mad2/"
-            },
-            {
-              "title": "Moto X3M",
-              "thumb": "https://img.gamemonetize.com/d9j8un4yvax8shshv0j51oog2y76711y/512x384.jpg",
-              "url": "https://html5.gamemonetize.com/d9j8un4yvax8shshv0j51oog2y76711y/"
-            }
-          ]
-          EOF
-
-          # 3. Flawless single-line python execution to prevent indentation crashes
-          python3 -c "import json; p=json.load(open('premium.json')); l=json.load(open('live_feed.json')); pt={g['title'] for g in p}; c=p+[g for g in l if g.get('title') not in pt]; json.dump(c, open('games.json', 'w'), indent=2)"
-
-          # 4. Clean up temporary files
-          rm live_feed.json premium.json
+          # Pulls the clean, native live feed straight into your games list
+          curl -s "https://gamemonetize.com/feed.php?format=0&num=100&page=1" > games.json
 
       - name: Commit and Push Updates
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add games.json
-          git diff-index --quiet HEAD || (git commit -m "Fixed formatting and game links" && git push)
+          git diff-index --quiet HEAD || (git commit -m "Removed premium games and reverted to pure live feed" && git push)
