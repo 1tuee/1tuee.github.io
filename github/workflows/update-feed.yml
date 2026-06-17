@@ -1,0 +1,25 @@
+name: Update Game Feed Daily
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs automatically every night at midnight
+  workflow_dispatch: # Allows you to trigger it manually whenever you want
+
+jobs:
+  update-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Fetch Live Game Feed Data
+        run: |
+          curl -s "https://gamemonetize.com/feed.php?format=0&num=50&page=1" > games.json
+
+      - name: Commit and Push Updates
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add games.json
+          git diff-index --quiet HEAD || git commit -m "Automated daily game feed refresh"
+          git push
